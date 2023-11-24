@@ -1,0 +1,38 @@
+---
+name: Setup Lean
+description: Set up the Lean theorem prover for use within GitHub Actions.
+author: Julian Berman
+inputs:
+  elan-version:
+    description: The version of elan itself to install. By default, the latest *master* will be used.
+    default: master
+  lean3ls:
+    description: Whether to install the Lean 3 language server for use with Lean 3.
+    default: ""
+  # TODO:
+  # default-toolchain:
+  #   description: A specific toolchain to declare as elan's default toolchain
+outputs:
+  # Probable TODO:
+  #
+  # lean-toolchain:
+  #   description: "The installed Lean toolchain version."
+  # lean-path:
+  #   description: "The absolute path to the Lean executable."
+  {}
+branding:
+  icon: "code"
+  color: "blue"
+
+runs:
+  using: composite
+  steps:
+    - name: Install elan
+      shell: bash
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/${{ inputs.elan-version }}/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin/" >> $GITHUB_PATH
+    - name: Install lean-language-server if Lean 3
+      shell: bash
+      run: npm install -g lean-language-server
+      if: ${{ inputs.lean3ls }} == 'true'
