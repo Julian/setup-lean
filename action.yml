@@ -35,7 +35,7 @@ runs:
       with:
         python-version: "3.12"
     - name: Maybe set a default toolchain
-      run: python3 ${{ github.action_path }}/detect_default_toolchain ${{ inputs.default-toolchain-file }} >> $GITHUB_ENV
+      run: python3 '${{ github.action_path }}/detect_default_toolchain' '${{ inputs.default-toolchain-file }}' >> $GITHUB_ENV
       if: ${{ inputs.default-toolchain-file != '' }}
       shell: bash
 

@@ -13,6 +13,10 @@ on:
     - cron: 40 3 * * *
   workflow_dispatch:
 
+defaults:
+  run: # because otherwise it's powershell on Windows...
+    shell: bash
+
 jobs:
   setup-using-defaults:
     name: Setup ${{ matrix.os }}
@@ -30,14 +34,11 @@ jobs:
 
       - name: Check lean runs
         run: lean --version
-        shell: bash
 
       - name: Check lake runs
         run: lake --version
-        shell: bash
 
       - name: Run simple code
-        shell: bash # explicit not for zsh, just because otherwise it's powershell on Windows...
         run: |
           printf 'def main : IO Unit := println! "Hello World"\n' lean --run --stdin
 
@@ -52,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create a stub lean-toolchain
-        run: printf 'leanprover/lean4:v4.3.0-rc2\n' >${{ runner.temp }}/lean-toolchain
+        run: printf 'leanprover/lean4:v4.3.0-rc2\n' >'${{ runner.temp }}/lean-toolchain'
 
       - name: setup-lean
         id: setup-lean
@@ -64,7 +65,6 @@ jobs:
         run: |
           expected='Lean\ \(version 4.3.0.*Release\)'
           [[ $(lean --version) =~ $expected ]]
-        shell: bash
 
   lean3-default-toolchain-file:
     name: Setup ${{ matrix.os }}
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create a stub leanpkg.toml
-        run: printf '[package]\nlean_version = "leanprover-community/lean:3.51.1"\n' >${{ runner.temp }}/leanpkg.toml
+        run: printf '[package]\nlean_version = "leanprover-community/lean:3.51.1"\n' >'${{ runner.temp }}/leanpkg.toml'
 
       - name: setup-lean
         id: setup-lean
@@ -90,4 +90,3 @@ jobs:
         run: |
           expected='Lean\ \(version 3.51.1.*Release\)'
           [[ $(lean --version) =~ $expected ]]
-        shell: bash
