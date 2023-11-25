@@ -37,5 +37,6 @@ jobs:
         shell: bash
 
       - name: Run simple code
+        shell: bash # explicit not for zsh, just because otherwise it's powershell on Windows...
         run: |
-          lean --run <(printf 'def main : IO Unit := println! "Hello World"')
+          printf 'def main : IO Unit := println! "Hello World"\n' lean --run --stdin
