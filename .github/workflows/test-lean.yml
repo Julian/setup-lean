@@ -1,0 +1,41 @@
+name: Validate Lean e2e
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+  schedule:
+    - cron: 40 3 * * *
+  workflow_dispatch:
+
+jobs:
+  setup-using-defaults:
+    name: Setup ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-20.04, ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup-lean
+        id: setup-lean
+        uses: ./
+
+      - name: Check lean runs
+        run: lean --version
+        shell: bash
+
+      - name: Check lake runs
+        run: lake --version
+        shell: bash
+
+      - name: Run simple code
+        run: |
+          lean --run <(printf 'def main : IO Unit := println! "Hello World"')
