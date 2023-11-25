@@ -1,0 +1,12 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import sys
+import tomllib
+
+*_, default_toolchain_file = sys.argv
+path = Path(default_toolchain_file)
+if path.name == "leanpkg.toml":
+    leanpkg = tomllib.loads(path.read_text())
+    lean3_version = leanpkg["package"]["lean_version"]
+    print(f"default_toolchain_arg=--default-toolchain={lean3_version}")
+    print("lean3ls=true")
