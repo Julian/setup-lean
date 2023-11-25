@@ -40,3 +40,54 @@ jobs:
         shell: bash # explicit not for zsh, just because otherwise it's powershell on Windows...
         run: |
           printf 'def main : IO Unit := println! "Hello World"\n' lean --run --stdin
+
+  default-toolchain-file:
+    name: Setup ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-20.04, ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create a stub lean-toolchain
+        run: printf 'leanprover/lean4:v4.3.0-rc2\n' >${{ runner.temp }}/lean-toolchain
+
+      - name: setup-lean
+        id: setup-lean
+        uses: ./
+        with:
+          default-toolchain-file: ${{ runner.temp }}/lean-toolchain
+
+      - name: Check we got the right version
+        run: |
+          expected='Lean\ \(version 4.3.0.*Release\)'
+          [[ $(lean --version) =~ $expected ]]
+        shell: bash
+
+  lean3-default-toolchain-file:
+    name: Setup ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-20.04, ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create a stub leanpkg.toml
+        run: printf '[package]\nlean_version = "leanprover-community/lean:3.51.1"\n' >${{ runner.temp }}/leanpkg.toml
+
+      - name: setup-lean
+        id: setup-lean
+        uses: ./
+        with:
+          default-toolchain-file: ${{ runner.temp }}/leanpkg.toml
+
+      - run: lean --version
+      - name: Check we got the right version
+        run: |
+          expected='Lean\ \(version 3.51.1.*Release\)'
+          [[ $(lean --version) =~ $expected ]]
+        shell: bash
