@@ -6,14 +6,8 @@ inputs:
   elan-version:
     description: The version of elan itself to install. By default, the latest *master* will be used.
     default: master
-  lean3ls:
-    description: Whether to install the Lean 3 language server for use with Lean 3.
-    default: ""
   # TODO: default-toolchain:
   #   description: A specific toolchain to declare as elan's default toolchain
-  default-toolchain-file:
-    description: If non-empty, a lean-toolchain file which will be used to set the default toolchain for elan. (For end-of-lifed Lean 3, this may also be a leanpkg.toml file, in which case setting lean3ls to true is implied).
-    default: ""
 outputs:
   # Probable TODO:
   #
@@ -30,22 +24,8 @@ runs:
   using: composite
 
   steps:
-    - uses: actions/setup-python@v4
-      if: ${{ inputs.default-toolchain-file != '' }}
-      with:
-        python-version: "3.12"
-    - name: Maybe set a default toolchain
-      run: python3 '${{ github.action_path }}/detect_default_toolchain' '${{ inputs.default-toolchain-file }}' >> $GITHUB_ENV
-      if: ${{ inputs.default-toolchain-file != '' }}
-      shell: bash
-
     - name: Install elan
       shell: bash
       run: |
         curl https://raw.githubusercontent.com/leanprover/elan/${{ inputs.elan-version }}/elan-init.sh -sSf | sh -s -- -y ${{ env.default_toolchain_arg }}
         echo "$HOME/.elan/bin/" >> $GITHUB_PATH
-
-    - name: Install lean-language-server if Lean 3
-      shell: bash
-      run: npm install -g lean-language-server
-      if: ${{ inputs.lean3ls == 'true' || env.lean3ls == 'true' }}
