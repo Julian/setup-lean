@@ -3,11 +3,9 @@ name: Setup Lean
 description: Set up the Lean theorem prover for use within GitHub Actions.
 author: Julian Berman
 inputs:
-  elan-version:
-    description: The version of elan itself to install. By default, the latest *master* will be used.
-    default: master
-  # TODO: default-toolchain:
-  #   description: A specific toolchain to declare as elan's default toolchain
+  default-toolchain:
+    description: "A specific toolchain to declare as elan's default toolchain"
+    required: false
 outputs:
   # Probable TODO:
   #
@@ -27,5 +25,10 @@ runs:
     - name: Install elan
       shell: bash
       run: |
-        curl https://raw.githubusercontent.com/leanprover/elan/${{ inputs.elan-version }}/elan-init.sh -sSf | sh -s -- -y ${{ env.default_toolchain_arg }}
+        ELAN_ARGS="-y"
+        if [ -n "${{ inputs.default-toolchain }}" ]; then
+          ELAN_ARGS="$ELAN_ARGS --default-toolchain=${{ inputs.default-toolchain }}"
+        fi
+
+        curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- $ELAN_ARGS
         echo "$HOME/.elan/bin/" >> $GITHUB_PATH

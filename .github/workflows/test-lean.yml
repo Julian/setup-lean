@@ -42,7 +42,7 @@ jobs:
         run: |
           printf 'def main : IO Unit := println! "Hello World"\n' lean --run --stdin
 
-  default-toolchain-file:
+  default-toolchain:
     name: Setup ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -59,9 +59,9 @@ jobs:
         id: setup-lean
         uses: ./
         with:
-          default-toolchain-file: ${{ runner.temp }}/lean-toolchain
+          default-toolchain: 4.17.0
 
       - name: Check we got the right version
         run: |
-          expected='Lean\ \(version 4.3.0.*Release\)'
+          expected='Lean\ \(version 4.17.0.*Release\)'
           [[ $(lean --version) =~ $expected ]]
