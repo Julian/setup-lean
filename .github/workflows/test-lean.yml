@@ -28,9 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup-lean
-        id: setup-lean
-        uses: ./
+      - uses: ./
 
       - name: Check lean runs
         run: lean --version
@@ -52,12 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create a stub lean-toolchain
-        run: printf 'leanprover/lean4:v4.3.0-rc2\n' >'${{ runner.temp }}/lean-toolchain'
-
-      - name: setup-lean
-        id: setup-lean
-        uses: ./
+      - uses: ./
         with:
           default-toolchain: 4.17.0
 
